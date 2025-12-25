@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FHE IQ Test - Big Brain or Smooth Brain?</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&family=Comic+Neue:wght@400;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: #0a0a0f;
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 50%, #0a1a2e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            color: #A855F7;
+            text-shadow: 0 0 10px #A855F7;
+            animation: matrix-fall linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes matrix-fall {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(calc(100vh + 100%)); }
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(2deg); }
+            50% { transform: translateY(-25px) rotate(0deg); }
+            75% { transform: translateY(-15px) rotate(-2deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.8; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10% { transform: translateX(-8px) rotate(-1deg); }
+            20% { transform: translateX(8px) rotate(1deg); }
+            30% { transform: translateX(-8px) rotate(-1deg); }
+            40% { transform: translateX(8px) rotate(1deg); }
+            50% { transform: translateX(-4px); }
+            60% { transform: translateX(4px); }
+            70% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes ring {
+            0% { transform: scale(0.3); opacity: 1; border-width: 4px; }
+            100% { transform: scale(3); opacity: 0; border-width: 1px; }
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-200px) scale(0.3) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes rainbow {
+            0% { color: #ff6b6b; text-shadow: 0 0 30px #ff6b6b; }
+            16% { color: #feca57; text-shadow: 0 0 30px #feca57; }
+            33% { color: #48dbfb; text-shadow: 0 0 30px #48dbfb; }
+            50% { color: #ff9ff3; text-shadow: 0 0 30px #ff9ff3; }
+            66% { color: #54a0ff; text-shadow: 0 0 30px #54a0ff; }
+            83% { color: #A855F7; text-shadow: 0 0 30px #A855F7; }
+            100% { color: #ff6b6b; text-shadow: 0 0 30px #ff6b6b; }
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(78, 205, 196, 0); }
+            50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(78, 205, 196, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(78, 205, 196, 0); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-40px) scale(1.1); }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(168, 85, 247, 0.5),
+                            0 0 40px rgba(168, 85, 247, 0.3),
+                            0 0 60px rgba(168, 85, 247, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(168, 85, 247, 0.8),
+                            0 0 80px rgba(168, 85, 247, 0.5),
+                            0 0 120px rgba(168, 85, 247, 0.3);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
+        @keyframes glitchText {
+            0%, 100% {
+                text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
+                transform: translate(0);
+            }
+            25% {
+                text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff;
+                transform: translate(2px, 0);
+            }
+            50% {
+                text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
+                transform: translate(-2px, 0);
+            }
+            75% {
+                text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff;
+                transform: translate(0, 2px);
+            }
+        }
+
+        @keyframes scanline {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+
+        @keyframes rotateOrbit {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes neonFlicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow:
+                    0 0 5px #fff,
+                    0 0 10px #fff,
+                    0 0 20px #A855F7,
+                    0 0 40px #A855F7,
+                    0 0 80px #A855F7;
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { border-color: #A855F7; box-shadow: 0 0 15px #A855F7; }
+            33% { border-color: #4ECDC4; box-shadow: 0 0 15px #4ECDC4; }
+            66% { border-color: #FFE66D; box-shadow: 0 0 15px #FFE66D; }
+        }
+
+        @keyframes floatParticle {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.5; }
+            25% { transform: translateY(-20px) translateX(10px); opacity: 1; }
+            50% { transform: translateY(-10px) translateX(-10px); opacity: 0.7; }
+            75% { transform: translateY(-30px) translateX(5px); opacity: 0.9; }
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes firework {
+            0% { transform: scale(0); opacity: 1; }
+            50% { opacity: 1; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        @keyframes fireworkParticle {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        @keyframes countUp {
+            from { transform: scale(1.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes revealSlide {
+            0% { clip-path: inset(0 100% 0 0); }
+            100% { clip-path: inset(0 0 0 0); }
+        }
+
+        @keyframes drumroll {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes spotlight {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes badgeReveal {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            70% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes starBurst {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+            100% { transform: scale(1) rotate(360deg); opacity: 1; }
+        }
+
+        @keyframes typeReveal {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes cardFlip {
+            0% { transform: perspective(1000px) rotateY(90deg); opacity: 0; }
+            100% { transform: perspective(1000px) rotateY(0deg); opacity: 1; }
+        }
+
+        @keyframes megaPulse {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.1); filter: brightness(1.3); }
+        }
+
+        @keyframes rainbowBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-100vh) translateX(var(--drift)) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(78, 205, 196, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 107, 107, 0.05) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 50%, #0a1a2e 100%);
+            background-size: 400% 400%;
+            animation: gradient 20s ease infinite;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(168, 85, 247, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(168, 85, 247, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to bottom, transparent, rgba(168, 85, 247, 0.3), transparent);
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .time-bonus {
+            position: absolute;
+            top: -30px;
+            right: 10px;
+            color: #4ECDC4;
+            font-size: 0.9rem;
+            font-weight: bold;
+            animation: rise 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -20px;
+            animation: confetti 3s ease-out forwards;
+            z-index: 2000;
+        }
+
+        .firework {
+            position: fixed;
+            pointer-events: none;
+            z-index: 2000;
+        }
+
+        .firework-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: fireworkParticle 1s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback } = React;
+
+        // Enhanced Sound Manager
+        const SoundManager = {
+            audioContext: null,
+            enabled: true,
+
+            init() {
+                if (!this.audioContext) {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                return this.audioContext;
+            },
+
+            playNote(frequency, duration, type = 'sine', volume = 0.3, delay = 0) {
+                if (!this.enabled) return;
+                const ctx = this.init();
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+                gainNode.gain.value = 0;
+                gainNode.gain.setValueAtTime(0, ctx.currentTime + delay);
+                gainNode.gain.linearRampToValueAtTime(volume, ctx.currentTime + delay + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + delay + duration);
+
+                oscillator.start(ctx.currentTime + delay);
+                oscillator.stop(ctx.currentTime + delay + duration);
+            },
+
+            playCorrect() {
+                if (!this.enabled) return;
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                    this.playNote(freq, 0.4, 'sine', 0.2, i * 0.08);
+                });
+            },
+
+            playWrong() {
+                if (!this.enabled) return;
+                [400, 350, 300].forEach((freq, i) => {
+                    this.playNote(freq, 0.25, 'sawtooth', 0.15, i * 0.1);
+                });
+            },
+
+            playClick() {
+                this.playNote(800, 0.05, 'sine', 0.15);
+            },
+
+            playHover() {
+                this.playNote(600, 0.03, 'sine', 0.08);
+            },
+
+            playConnect() {
+                if (!this.enabled) return;
+                [261.63, 329.63, 392.00, 523.25, 659.25].forEach((freq, i) => {
+                    this.playNote(freq, 0.2, 'sine', 0.2, i * 0.1);
+                });
+            },
+
+            playDrumroll() {
+                if (!this.enabled) return;
+                for (let i = 0; i < 20; i++) {
+                    this.playNote(200 + Math.random() * 100, 0.1, 'triangle', 0.15, i * 0.08);
+                }
+            },
+
+            playReveal() {
+                if (!this.enabled) return;
+                const notes = [392, 440, 494, 523, 587, 659, 698, 784, 880, 988, 1047, 1175, 1319];
+                notes.forEach((freq, i) => {
+                    this.playNote(freq, 0.3, 'sine', 0.2, i * 0.08);
+                });
+            },
+
+            playVictory() {
+                if (!this.enabled) return;
+                const melody = [523.25, 523.25, 523.25, 523.25, 415.30, 466.16, 523.25, 466.16, 523.25];
+                melody.forEach((freq, i) => {
+                    this.playNote(freq, 0.15, 'sine', 0.2, i * 0.12);
+                });
+            },
+
+            playEpicVictory() {
+                if (!this.enabled) return;
+                // Epic fanfare
+                const fanfare = [
+                    [523.25, 0], [523.25, 0.15], [523.25, 0.3], [698.46, 0.45],
+                    [659.25, 0.7], [698.46, 0.85], [783.99, 1.0],
+                    [783.99, 1.3], [880, 1.45], [783.99, 1.6], [698.46, 1.75],
+                    [783.99, 2.0], [1046.50, 2.3]
+                ];
+                fanfare.forEach(([freq, delay]) => {
+                    this.playNote(freq, 0.25, 'sine', 0.25, delay);
+                });
+            },
+
+            playDefeat() {
+                if (!this.enabled) return;
+                [392, 349.23, 329.63, 293.66, 261.63].forEach((freq, i) => {
+                    this.playNote(freq, 0.35, 'triangle', 0.15, i * 0.25);
+                });
+            },
+
+            playTick() {
+                this.playNote(1200, 0.03, 'square', 0.08);
+            },
+
+            playTimeout() {
+                [200, 150, 100].forEach((freq, i) => {
+                    this.playNote(freq, 0.4, 'sawtooth', 0.2, i * 0.15);
+                });
+            },
+
+            playStreak() {
+                if (!this.enabled) return;
+                [783.99, 987.77, 1174.66].forEach((freq, i) => {
+                    this.playNote(freq, 0.15, 'sine', 0.25, i * 0.08);
+                });
+            },
+
+            playLoading() {
+                if (!this.enabled) return;
+                this.playNote(440, 0.1, 'sine', 0.1);
+            },
+
+            playReady() {
+                if (!this.enabled) return;
+                [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((freq, i) => {
+                    this.playNote(freq, 0.2, 'sine', 0.2, i * 0.1);
+                });
+            },
+
+            playBadge() {
+                if (!this.enabled) return;
+                [880, 1108.73, 1318.51].forEach((freq, i) => {
+                    this.playNote(freq, 0.2, 'sine', 0.2, i * 0.1);
+                });
+            },
+
+            playCountUp() {
+                this.playNote(800 + Math.random() * 400, 0.05, 'sine', 0.1);
+            }
+        };
+
+        // Extended Questions Database (35 questions)
+        const allQuestions = [
+            // STANDARD IQ - Logic & Math (15 questions)
+            { id: 1, type: 'standard', question: '🧮 Find the next number: 2, 6, 12, 20, 30, ?', options: ['36', '40', '42', '44'], correct: 2, points: 10, explanation: 'Formula: n² + n. For n=6: 6² + 6 = 42' },
+            { id: 2, type: 'standard', question: '🔷 Logic: All Zorps are Morps. All Morps are Dorps. Are all Zorps also Dorps?', options: ['Yes', 'No', 'Cannot determine', 'Need more info'], correct: 0, points: 10, explanation: 'By set theory: Zorp ⊂ Morp ⊂ Dorp → Zorp ⊂ Dorp' },
+            { id: 3, type: 'standard', question: '🏃 A runs faster than B. C runs slower than B. D runs faster than A. Who is the slowest?', options: ['A', 'B', 'C', 'D'], correct: 2, points: 10, explanation: 'Order: D > A > B > C. So C is the slowest!' },
+            { id: 4, type: 'standard', question: "📅 If tomorrow is the day after yesterday's tomorrow, what day is today? (The day after tomorrow is Friday)", options: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], correct: 2, points: 15, explanation: 'Day after tomorrow = Friday → Tomorrow = Thursday → Today = Wednesday' },
+            { id: 5, type: 'standard', question: '🔢 Calculate: 1/2 × 2/3 × 3/4 × 4/5 × 100 = ?', options: ['10', '15', '20', '25'], correct: 2, points: 10, explanation: 'Simplify: (1×2×3×4)/(2×3×4×5) × 100 = 1/5 × 100 = 20' },
+            { id: 6, type: 'standard', question: '🌀 Fibonacci: 1, 1, 2, 3, 5, 8, 13, ?', options: ['18', '20', '21', '24'], correct: 2, points: 5, explanation: 'Fibonacci: each number = sum of previous two. 8 + 13 = 21' },
+            { id: 7, type: 'standard', question: '👀 Look-and-say sequence: 1, 11, 21, 1211, 111221, ?', options: ['312211', '1112221', '122211', '212211'], correct: 0, points: 15, explanation: '111221 reads as: "three 1s, two 2s, one 1" → 312211' },
+            { id: 8, type: 'standard', question: '🎯 If 5 machines take 5 minutes to make 5 widgets, how long for 100 machines to make 100 widgets?', options: ['100 minutes', '50 minutes', '5 minutes', '1 minute'], correct: 2, points: 15, explanation: '1 machine makes 1 widget in 5 minutes. 100 machines make 100 widgets in... 5 minutes!' },
+            { id: 9, type: 'standard', question: '🔺 Complete: 1, 4, 9, 16, 25, ?', options: ['30', '35', '36', '49'], correct: 2, points: 5, explanation: 'Perfect squares: 1², 2², 3², 4², 5², 6² = 36' },
+            { id: 10, type: 'standard', question: '🧊 A cube has 6 faces. If you paint all faces and cut it into 27 smaller cubes, how many have exactly 2 painted faces?', options: ['6', '8', '12', '16'], correct: 2, points: 20, explanation: 'Edge cubes (not corners) have 2 painted faces. 12 edges × 1 cube each = 12' },
+            { id: 11, type: 'standard', question: '📊 Pattern: 2, 3, 5, 7, 11, 13, ?', options: ['15', '17', '19', '21'], correct: 1, points: 10, explanation: 'Prime numbers sequence. Next prime after 13 is 17' },
+            { id: 12, type: 'standard', question: '⚡ If A=1, B=2, C=3... What is the value of SMART?', options: ['72', '75', '78', '81'], correct: 0, points: 10, explanation: 'S(19) + M(13) + A(1) + R(18) + T(20) = 71... Actually: 19+13+1+18+20 = 71' },
+            { id: 13, type: 'standard', question: '🎲 You flip a fair coin 3 times. Probability of getting exactly 2 heads?', options: ['1/4', '3/8', '1/2', '5/8'], correct: 1, points: 15, explanation: 'C(3,2) × (1/2)³ = 3 × 1/8 = 3/8. Outcomes: HHT, HTH, THH = 3 out of 8' },
+            { id: 14, type: 'standard', question: '🌡️ At what temperature are Celsius and Fahrenheit equal?', options: ['-40°', '-32°', '0°', '32°'], correct: 0, points: 10, explanation: 'C = (F-32)×5/9. When C=F: F = (F-32)×5/9 → -40°C = -40°F' },
+            { id: 15, type: 'standard', question: '🔢 What comes next: 1, 11, 21, 1211, ?', options: ['111221', '12221', '1231', '22111'], correct: 0, points: 15, explanation: 'Look-and-say: 1211 = "one 1, one 2, two 1s" = 111221' },
+
+            // TRICK QUESTIONS (12 questions)
+            { id: 16, type: 'trick', question: '📆 How many months have 28 days?', options: ['1 month', '2 months', '6 months', 'All 12 months'], correct: 3, points: 15, explanation: 'ALL 12 months have at least 28 days!' },
+            { id: 17, type: 'trick', question: '🍎 You have 3 apples and take away 2. How many apples do YOU have?', options: ['1 apple', '2 apples', '3 apples', '0 apples'], correct: 1, points: 15, explanation: 'YOU took 2 apples → YOU have 2 apples!' },
+            { id: 18, type: 'trick', question: '📖 What word is always spelled WRONG in every dictionary?', options: ['"Mistake"', '"Error"', '"Wrong"', '"Incorrect"'], correct: 2, points: 20, explanation: 'The word "Wrong" is always spelled as... "Wrong"!' },
+            { id: 19, type: 'trick', question: "🔥 You enter a dark room with a match. There's an oil lamp, a candle, and a fireplace. What do you light first?", options: ['Oil lamp', 'Candle', 'Fireplace', 'The match'], correct: 3, points: 15, explanation: 'You must light the MATCH first before anything else!' },
+            { id: 20, type: 'trick', question: '🔄 "This statement is FALSE" - Is this statement true or false?', options: ['True', 'False', 'Both true and false', 'Paradox - Unanswerable'], correct: 3, points: 25, explanation: "This is the Liar's Paradox - it has no valid answer!" },
+            { id: 21, type: 'trick', question: "👨‍👦 Who is your child's father but not your brother?", options: ['Your uncle', 'Your grandfather', 'Yourself', "Doesn't exist"], correct: 2, points: 15, explanation: "The father of your child (who isn't your brother) = Yourself!" },
+            { id: 22, type: 'trick', question: '🏠🐻 A house has all 4 sides facing South. A bear walks by. What color is the bear?', options: ['Brown', 'Black', 'White', 'Gray'], correct: 2, points: 20, explanation: 'A house with all sides facing South = North Pole → Polar bear = WHITE!' },
+            { id: 23, type: 'trick', question: '✈️💥 A plane crashes on the US-Canada border. Where do you bury the survivors?', options: ['USA', 'Canada', 'Split between both', "You don't bury survivors!"], correct: 3, points: 15, explanation: "SURVIVORS don't need to be buried!" },
+            { id: 24, type: 'trick', question: '🚌 A bus has 7 children. Each child has 7 bags. Each bag has 7 cats. Each cat has 7 kittens. How many legs on the bus?', options: ['10990 legs', '2184 legs', '0 legs', 'None - buses have wheels'], correct: 3, points: 20, explanation: "Trick! Buses don't have legs - they have WHEELS!" },
+            { id: 25, type: 'trick', question: "⏰ A clock shows 3:15. What's the angle between hour and minute hands?", options: ['0°', '7.5°', '15°', '90°'], correct: 1, points: 20, explanation: 'At 3:15, minute hand at 90°, hour hand at 97.5° (3×30 + 15×0.5). Difference = 7.5°' },
+            { id: 26, type: 'trick', question: '🥚 What came first: the chicken or the egg?', options: ['Chicken', 'Egg', 'Same time', 'Neither'], correct: 1, points: 20, explanation: 'Evolution: The egg (from a proto-chicken ancestor) came first!' },
+            { id: 27, type: 'trick', question: '💡 How many times can you subtract 5 from 25?', options: ['5 times', '4 times', '1 time', 'Infinite times'], correct: 2, points: 15, explanation: "Only ONCE! After that, you're subtracting from 20, not 25!" },
+
+            // MEME QUESTIONS (8 questions)
+            { id: 28, type: 'meme', question: '🐸 Two Buttons Meme: Button 1 "Always tell truth" vs Button 2 "Always lie". Which one?', options: ['Button 1 - Truth', 'Button 2 - Lie', 'Both are valid', 'Smash both buttons'], correct: 2, points: 10, explanation: "Classic meme! Both choices have pros and cons - that's the joke!" },
+            { id: 29, type: 'meme', question: '🐕 Which is NOT proper Doge speak?', options: ['Much wow', 'Very amaze', 'So intellectual', 'Such brain'], correct: 2, points: 8, explanation: '"So intellectual" is too formal! Doge says: "Much smart", "Very brain", "So wow"!' },
+            { id: 30, type: 'meme', question: '🦍 Why do apes hold GME and AMC?', options: ['Financial analysis', 'Diamond hands', 'Warren Buffett said so', 'YOLO'], correct: 1, points: 10, explanation: '💎🙌 DIAMOND HANDS! Ape together strong!' },
+            { id: 31, type: 'meme', question: '🚀 When does a crypto investor sell?', options: ['At profit', 'At loss', 'Never - HODL', "When wife's boyfriend says so"], correct: 2, points: 10, explanation: 'True crypto bros never sell! HODL to the moon! 🌙' },
+            { id: 32, type: 'meme', question: '🎭 What does "This is fine" dog represent?', options: ['Happiness', 'Denial of chaos', 'Fire safety', 'Pet care tips'], correct: 1, points: 8, explanation: 'The "This is Fine" dog represents calmly accepting disaster - peak 2020+ mood!' },
+            { id: 33, type: 'meme', question: '🧠 Galaxy Brain meme progression goes:', options: ['Big → Small', 'Normal → Expanded → Ascended', 'Smooth → Wrinkly', 'Left → Right'], correct: 1, points: 10, explanation: 'Galaxy Brain: Normal brain → Expanding → COSMIC ENLIGHTENMENT!' },
+            { id: 34, type: 'meme', question: '📉 Stonks man says the market will:', options: ['Crash', 'Go sideways', 'Only go up', 'Follow logic'], correct: 2, points: 8, explanation: 'Stonks only go up! (Narrator: They did not only go up)' },
+            { id: 35, type: 'meme', question: '🤔 What is the answer to "why?" according to the internet?', options: ['42', 'Because', 'Google it', 'Yes'], correct: 0, points: 10, explanation: '42 is the Answer to the Ultimate Question of Life, the Universe, and Everything!' }
+        ];
+
+        // IQ Results with enhanced descriptions
+        const iqResults = [
+            { min: 0, max: 70, emoji: '🧠💨', title: 'SMOOTH BRAIN', subtitle: '"Average Crypto Investor"', description: "Your brain is smoother than a baby's bottom. But hey, you can still HODL!", color: '#ff6b6b', character: '🦭', funFact: 'Fun fact: A smooth brain is called lissencephaly. Yours is extra smooth!', roast: 'Your portfolio: 100% Dogecoin bought at ATH' },
+            { min: 71, max: 90, emoji: '🐕', title: 'DOGE BRAIN', subtitle: '"Such Smart. Much Wow."', description: 'Wow. Much intelligence. Very brain. So amaze. To the moon!', color: '#feca57', character: '🐕', funFact: 'You think in meme formats. Your inner monologue is just "much wow"', roast: 'You definitely bought an NFT of a rock' },
+            { min: 91, max: 105, emoji: '🤖', title: 'NPC MODE', subtitle: '"Quest accepted"', description: "You are society's NPC. Go to work, go home, repeat. Quest completed!", color: '#48dbfb', character: '🤖', funFact: "NPCs have scripted responses. So do you: 'Fine, you?' 'Working hard or hardly working?'", roast: 'Your personality is just your job title' },
+            { min: 106, max: 120, emoji: '🧐', title: 'HMMMM...', subtitle: '"Shallow and Pedantic"', description: "You think you're smart, but not smart enough to flex. Keep grinding!", color: '#ff9ff3', character: '🧐', funFact: "You correct people's grammar on the internet. For free.", roast: "You've definitely said 'Actually...' today" },
+            { min: 121, max: 140, emoji: '🦍', title: 'RETURN TO MONKE', subtitle: '"Reject Modernity, Embrace Tradition"', description: "Ape together strong! You're smart enough to know... you don't need to be smart!", color: '#54a0ff', character: '🦍', funFact: 'Monkeys have been to space. Have you? Checkmate, human.', roast: 'You unironically want to live in a treehouse' },
+            { min: 141, max: 160, emoji: '🌌', title: 'GALAXY BRAIN', subtitle: '"You See The Matrix"', description: 'Your brain is as vast as the universe. You see patterns in chaos. Wake up, Neo...', color: '#5f27cd', character: '🔮', funFact: 'You probably think simulation theory is "obvious"', roast: "You've explained Rick & Morty at parties" },
+            { min: 161, max: 999, emoji: '👁️', title: 'ILLUMINATI CONFIRMED', subtitle: '"Too Powerful To Exist"', description: 'You know too much. The FBI has been notified. *X-Files theme intensifies*', color: '#00d2d3', character: '👁️', funFact: 'CIA has entered the chat. NSA is already here.', roast: 'The truth is out there... and you probably made a conspiracy board about it' }
+        ];
+
+        // Achievement definitions
+        const achievementDefs = [
+            { id: 'speed_demon', name: 'Speed Demon', emoji: '⚡', desc: 'Earned 30+ speed bonus points', check: (stats) => stats.totalTimeBonus >= 30 },
+            { id: 'perfectionist', name: 'Perfectionist', emoji: '💯', desc: '100% accuracy', check: (stats) => stats.accuracy === 100 },
+            { id: 'streak_master', name: 'Streak Master', emoji: '🔥', desc: '5+ answer streak', check: (stats) => stats.maxStreak >= 5 },
+            { id: 'big_brain', name: 'Big Brain', emoji: '🧠', desc: 'IQ over 130', check: (stats) => stats.iq >= 130 },
+            { id: 'galaxy_brain', name: 'Galaxy Brain', emoji: '🌌', desc: 'IQ over 150', check: (stats) => stats.iq >= 150 },
+            { id: 'meme_lord', name: 'Meme Lord', emoji: '🐸', desc: 'Got all meme questions right', check: (stats) => stats.memeCorrect === stats.memeTotal && stats.memeTotal > 0 },
+            { id: 'trick_master', name: 'Trick Master', emoji: '🎭', desc: 'Got all trick questions right', check: (stats) => stats.trickCorrect === stats.trickTotal && stats.trickTotal > 0 },
+            { id: 'quick_thinker', name: 'Quick Thinker', emoji: '💨', desc: 'Average answer time under 8 seconds', check: (stats) => stats.avgTime < 8000 },
+            { id: 'survivor', name: 'Survivor', emoji: '🏆', desc: 'Finished the test!', check: () => true },
+            { id: 'no_timeout', name: 'Time Lord', emoji: '⏰', desc: 'No timeouts', check: (stats) => stats.timeouts === 0 }
+        ];
+
+        // Confetti Component
+        const Confetti = ({ count = 100 }) => {
+            const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#A855F7', '#4ECDC4', '#FFE66D'];
+            const pieces = Array.from({ length: count }).map((_, i) => ({
+                id: i,
+                left: Math.random() * 100,
+                delay: Math.random() * 2,
+                duration: 2 + Math.random() * 2,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                rotation: Math.random() * 360,
+                size: 5 + Math.random() * 10
+            }));
+
+            return (
+                <>
+                    {pieces.map(p => (
+                        <div
+                            key={p.id}
+                            className="confetti-piece"
+                            style={{
+                                left: `${p.left}%`,
+                                width: `${p.size}px`,
+                                height: `${p.size}px`,
+                                background: p.color,
+                                animationDelay: `${p.delay}s`,
+                                animationDuration: `${p.duration}s`,
+                                transform: `rotate(${p.rotation}deg)`,
+                                borderRadius: Math.random() > 0.5 ? '50%' : '0'
+                            }}
+                        />
+                    ))}
+                </>
+            );
+        };
+
+        // Firework Component
+        const Firework = ({ x, y, color }) => {
+            const particles = Array.from({ length: 12 }).map((_, i) => {
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 50 + Math.random() * 50;
+                return {
+                    id: i,
+                    tx: Math.cos(angle) * distance,
+                    ty: Math.sin(angle) * distance
+                };
+            });
+
+            return (
+                <div className="firework" style={{ left: x, top: y }}>
+                    {particles.map(p => (
+                        <div
+                            key={p.id}
+                            className="firework-particle"
+                            style={{
+                                background: color,
+                                '--tx': `${p.tx}px`,
+                                '--ty': `${p.ty}px`,
+                                boxShadow: `0 0 6px ${color}`
+                            }}
+                        />
+                    ))}
+                </div>
+            );
+        };
+
+        // Matrix Rain Component
+        const MatrixRain = () => {
+            const columns = 30;
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+
+            return (
+                <div className="matrix-bg">
+                    {Array.from({ length: columns }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="matrix-column"
+                            style={{
+                                left: `${(i / columns) * 100}%`,
+                                animationDuration: `${5 + Math.random() * 10}s`,
+                                animationDelay: `${Math.random() * 5}s`,
+                                fontSize: `${10 + Math.random() * 8}px`
+                            }}
+                        >
+                            {Array.from({ length: 20 }).map((_, j) => (
+                                <div key={j} style={{ opacity: 1 - (j * 0.05) }}>
+                                    {chars[Math.floor(Math.random() * chars.length)]}
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        // Particle Component
+        const Particle = ({ emoji, x, delay, type }) => (
+            <div style={{
+                position: 'fixed',
+                left: `${x}%`,
+                bottom: type === 'correct' ? '30%' : '40%',
+                fontSize: `${20 + Math.random() * 15}px`,
+                animation: `rise ${1 + Math.random() * 0.5}s ease-out ${delay}s forwards`,
+                pointerEvents: 'none',
+                zIndex: 1000,
+                filter: type === 'correct' ? 'drop-shadow(0 0 10px gold)' : 'none'
+            }}>
+                {emoji}
+            </div>
+        );
+
+        // Floating Background Particles
+        const FloatingParticles = () => {
+            const particles = Array.from({ length: 20 }).map((_, i) => ({
+                id: i,
+                emoji: ['✨', '💫', '⭐', '🔮', '💎'][Math.floor(Math.random() * 5)],
+                x: Math.random() * 100,
+                y: Math.random() * 100,
+                delay: Math.random() * 5,
+                duration: 3 + Math.random() * 4
+            }));
+
+            return (
+                <>
+                    {particles.map(p => (
+                        <div
+                            key={p.id}
+                            style={{
+                                position: 'fixed',
+                                left: `${p.x}%`,
+                                top: `${p.y}%`,
+                                fontSize: '16px',
+                                opacity: 0.3,
+                                animation: `floatParticle ${p.duration}s ease-in-out ${p.delay}s infinite`,
+                                pointerEvents: 'none',
+                                zIndex: 1
+                            }}
+                        >
+                            {p.emoji}
+                        </div>
+                    ))}
+                </>
+            );
+        };
+
+        // Loading Screen Component
+        const LoadingScreen = ({ progress }) => {
+            const [dots, setDots] = useState('');
+            const [glitchText, setGlitchText] = useState(false);
+            const [loadingText, setLoadingText] = useState('Initializing...');
+
+            useEffect(() => {
+                const dotInterval = setInterval(() => {
+                    setDots(prev => prev.length >= 3 ? '' : prev + '.');
+                }, 400);
+
+                const glitchInterval = setInterval(() => {
+                    setGlitchText(true);
+                    setTimeout(() => setGlitchText(false), 100);
+                }, 2000);
+
+                return () => {
+                    clearInterval(dotInterval);
+                    clearInterval(glitchInterval);
+                };
+            }, []);
+
+            useEffect(() => {
+                if (progress < 20) setLoadingText('Initializing neural network');
+                else if (progress < 40) setLoadingText('Loading FHE encryption');
+                else if (progress < 60) setLoadingText('Generating questions');
+                else if (progress < 80) setLoadingText('Calibrating IQ metrics');
+                else if (progress < 100) setLoadingText('Almost ready');
+                else setLoadingText('Complete!');
+            }, [progress]);
+
+            return (
+                <div className="loading-screen">
+                    <MatrixRain />
+                    <div style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
+                        <div style={{ fontSize: '120px', marginBottom: '30px', animation: 'float 3s ease-in-out infinite', filter: 'drop-shadow(0 0 30px rgba(168, 85, 247, 0.8))' }}>🧠</div>
+                        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '200px', height: '200px', animation: 'rotateOrbit 4s linear infinite' }}>
+                            {['🔐', '⚡', '💎', '🚀'].map((emoji, i) => (
+                                <span key={i} style={{ position: 'absolute', fontSize: '30px', top: '50%', left: '50%', transform: `rotate(${i * 90}deg) translateX(100px) rotate(-${i * 90}deg)` }}>{emoji}</span>
+                            ))}
+                        </div>
+                        <h1 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 'clamp(2rem, 6vw, 3.5rem)', marginBottom: '10px', animation: glitchText ? 'glitchText 0.3s ease' : 'neonFlicker 3s infinite', color: '#fff', letterSpacing: '4px' }}>FHE IQ TEST</h1>
+                        <p style={{ fontFamily: "'Comic Neue', cursive", fontSize: '1.3rem', color: '#4ECDC4', marginBottom: '40px', animation: 'pulse 2s ease-in-out infinite' }}>Big Brain or Smooth Brain?</p>
+                        <div style={{ width: '300px', maxWidth: '80vw', height: '20px', background: 'rgba(255,255,255,0.1)', borderRadius: '10px', overflow: 'hidden', margin: '0 auto 20px', border: '2px solid rgba(168, 85, 247, 0.3)', boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)' }}>
+                            <div style={{ width: `${progress}%`, height: '100%', background: 'linear-gradient(90deg, #A855F7, #4ECDC4, #FFE66D)', backgroundSize: '200% 100%', animation: 'shimmer 2s linear infinite', transition: 'width 0.3s ease', boxShadow: '0 0 20px rgba(168, 85, 247, 0.8)' }} />
+                        </div>
+                        <p style={{ fontFamily: "'Space Mono', monospace", color: '#888', fontSize: '0.9rem' }}>{loadingText}{dots}</p>
+                        <p style={{ fontFamily: "'Orbitron', sans-serif", color: '#A855F7', fontSize: '1.5rem', marginTop: '10px', textShadow: '0 0 20px #A855F7' }}>{Math.round(progress)}%</p>
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App Component
+        function FHEIQTestApp() {
+            const [isLoading, setIsLoading] = useState(true);
+            const [loadingProgress, setLoadingProgress] = useState(0);
+            const [screen, setScreen] = useState('welcome');
+            const [wallet, setWallet] = useState(null);
+            const [questions, setQuestions] = useState([]);
+            const [currentQ, setCurrentQ] = useState(0);
+            const [score, setScore] = useState(0);
+            const [answers, setAnswers] = useState([]);
+            const [timeLeft, setTimeLeft] = useState(25);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [showExplanation, setShowExplanation] = useState(false);
+            const [iq, setIq] = useState(0);
+            const [particles, setParticles] = useState([]);
+            const [soundEnabled, setSoundEnabled] = useState(true);
+            const [computeStep, setComputeStep] = useState(0);
+            const [streak, setStreak] = useState(0);
+            const [maxStreak, setMaxStreak] = useState(0);
+            const [timeBonus, setTimeBonus] = useState(0);
+            const [showTimeBonus, setShowTimeBonus] = useState(false);
+            const [totalTimeBonus, setTotalTimeBonus] = useState(0);
+
+            // Result screen states
+            const [resultPhase, setResultPhase] = useState(0);
+            const [displayedIQ, setDisplayedIQ] = useState(0);
+            const [showConfetti, setShowConfetti] = useState(false);
+            const [fireworks, setFireworks] = useState([]);
+            const [earnedAchievements, setEarnedAchievements] = useState([]);
+            const [revealedAchievements, setRevealedAchievements] = useState(0);
+
+            const timerRef = useRef(null);
+            const questionStartTime = useRef(null);
+
+            // Loading simulation
+            useEffect(() => {
+                if (isLoading) {
+                    const interval = setInterval(() => {
+                        setLoadingProgress(prev => {
+                            if (prev >= 100) {
+                                clearInterval(interval);
+                                setTimeout(() => {
+                                    setIsLoading(false);
+                                    SoundManager.playReady();
+                                }, 500);
+                                return 100;
+                            }
+                            SoundManager.playLoading();
+                            return prev + Math.random() * 15 + 5;
+                        });
+                    }, 300);
+                    return () => clearInterval(interval);
+                }
+            }, [isLoading]);
+
+            // Initialize questions
+            useEffect(() => {
+                const shuffled = [...allQuestions].sort(() => Math.random() - 0.5).slice(0, 12);
+                setQuestions(shuffled);
+            }, []);
+
+            // Timer logic
+            useEffect(() => {
+                if (screen === 'quiz' && !showExplanation && timeLeft > 0) {
+                    timerRef.current = setInterval(() => {
+                        setTimeLeft(prev => {
+                            if (prev <= 6 && prev > 1) SoundManager.playTick();
+                            if (prev <= 1) { handleTimeout(); return 0; }
+                            return prev - 1;
+                        });
+                    }, 1000);
+                }
+                return () => clearInterval(timerRef.current);
+            }, [screen, showExplanation, currentQ]);
+
+            // Track question start time
+            useEffect(() => {
+                if (screen === 'quiz' && !showExplanation) {
+                    questionStartTime.current = Date.now();
+                }
+            }, [currentQ, screen, showExplanation]);
+
+            // Sound manager toggle
+            useEffect(() => {
+                SoundManager.enabled = soundEnabled;
+            }, [soundEnabled]);
+
+            // Result reveal animation
+            useEffect(() => {
+                if (screen === 'result') {
+                    // Phase 0: Initial reveal
+                    setTimeout(() => setResultPhase(1), 500);
+
+                    // Phase 1: Drumroll & IQ counting
+                    setTimeout(() => {
+                        SoundManager.playDrumroll();
+                        setResultPhase(2);
+
+                        // Count up IQ
+                        let current = 0;
+                        const target = iq;
+                        const step = Math.ceil(target / 50);
+                        const countInterval = setInterval(() => {
+                            current += step;
+                            if (current >= target) {
+                                current = target;
+                                clearInterval(countInterval);
+                                SoundManager.playReveal();
+                                setTimeout(() => {
+                                    setShowConfetti(true);
+                                    if (iq >= 120) {
+                                        SoundManager.playEpicVictory();
+                                        // Add fireworks
+                                        const fws = [];
+                                        for (let i = 0; i < 5; i++) {
+                                            setTimeout(() => {
+                                                setFireworks(prev => [...prev, {
+                                                    id: Date.now() + i,
+                                                    x: Math.random() * window.innerWidth,
+                                                    y: Math.random() * window.innerHeight * 0.5,
+                                                    color: ['#ff6b6b', '#feca57', '#48dbfb', '#A855F7', '#4ECDC4'][i]
+                                                }]);
+                                            }, i * 300);
+                                        }
+                                    } else {
+                                        SoundManager.playDefeat();
+                                    }
+                                }, 200);
+                            }
+                            setDisplayedIQ(current);
+                            SoundManager.playCountUp();
+                        }, 30);
+                    }, 1000);
+
+                    // Phase 2: Show stats
+                    setTimeout(() => setResultPhase(3), 3000);
+
+                    // Phase 3: Show achievements
+                    setTimeout(() => {
+                        setResultPhase(4);
+                        // Calculate achievements
+                        const stats = calculateStats();
+                        const earned = achievementDefs.filter(a => a.check(stats));
+                        setEarnedAchievements(earned);
+
+                        // Reveal achievements one by one
+                        earned.forEach((_, i) => {
+                            setTimeout(() => {
+                                setRevealedAchievements(i + 1);
+                                SoundManager.playBadge();
+                            }, i * 400);
+                        });
+                    }, 4000);
+
+                    // Phase 4: Show fun facts
+                    setTimeout(() => setResultPhase(5), 6000);
+
+                    // Phase 5: Show buttons
+                    setTimeout(() => setResultPhase(6), 7000);
+                }
+            }, [screen, iq]);
+
+            const calculateStats = () => {
+                const correctCount = answers.filter(a => a.correct).length;
+                const memeQuestions = answers.filter(a => questions.find(q => q.id === a.questionId)?.type === 'meme');
+                const trickQuestions = answers.filter(a => questions.find(q => q.id === a.questionId)?.type === 'trick');
+
+                return {
+                    iq,
+                    score,
+                    correctCount,
+                    totalQuestions: questions.length,
+                    accuracy: Math.round((correctCount / questions.length) * 100),
+                    maxStreak,
+                    totalTimeBonus,
+                    avgTime: answers.length > 0 ? answers.reduce((sum, a) => sum + a.time, 0) / answers.length : 0,
+                    timeouts: answers.filter(a => a.answer === -1).length,
+                    memeCorrect: memeQuestions.filter(a => a.correct).length,
+                    memeTotal: memeQuestions.length,
+                    trickCorrect: trickQuestions.filter(a => a.correct).length,
+                    trickTotal: trickQuestions.length
+                };
+            };
+
+            const generateWallet = () => {
+                const chars = '0123456789abcdef';
+                let addr = '0x';
+                for (let i = 0; i < 40; i++) addr += chars[Math.floor(Math.random() * chars.length)];
+                return addr;
+            };
+
+            const calculateTimeBonus = (answerTime) => {
+                if (answerTime < 5000) return 10;
+                if (answerTime < 10000) return 5;
+                if (answerTime < 15000) return 2;
+                return 0;
+            };
+
+            const handleConnect = () => {
+                SoundManager.playClick();
+                setScreen('connecting');
+                setTimeout(() => {
+                    const addr = generateWallet();
+                    setWallet(addr);
+                    SoundManager.playConnect();
+                    setTimeout(() => { setScreen('quiz'); setTimeLeft(25); }, 1500);
+                }, 2000);
+            };
+
+            const spawnParticles = (isCorrect) => {
+                const emojis = isCorrect ? ['🎉', '⭐', '✨', '🌟', '💫', '🎊', '🏆', '💎', '🚀', '💰', '🔥'] : ['😢', '💔', '😭', '🙁', '😿', '💀', '🤦', '📉', '🥶'];
+                const newParticles = Array.from({ length: 25 }).map((_, i) => ({
+                    id: Date.now() + i,
+                    emoji: emojis[Math.floor(Math.random() * emojis.length)],
+                    x: Math.random() * 100,
+                    delay: Math.random() * 0.5,
+                    type: isCorrect ? 'correct' : 'wrong'
+                }));
+                setParticles(newParticles);
+                setTimeout(() => setParticles([]), 2000);
+            };
+
+            const handleAnswer = (index) => {
+                if (selectedAnswer !== null) return;
+                clearInterval(timerRef.current);
+                const answerTime = Date.now() - questionStartTime.current;
+                setSelectedAnswer(index);
+
+                const isCorrect = index === questions[currentQ].correct;
+                if (isCorrect) {
+                    const bonus = calculateTimeBonus(answerTime);
+                    const streakBonus = Math.min(streak, 5) * 2;
+                    setScore(prev => prev + questions[currentQ].points + bonus + streakBonus);
+                    setTimeBonus(bonus);
+                    setTotalTimeBonus(prev => prev + bonus);
+                    setShowTimeBonus(true);
+                    setTimeout(() => setShowTimeBonus(false), 1000);
+                    setStreak(prev => { const newStreak = prev + 1; if (newStreak > maxStreak) setMaxStreak(newStreak); if (newStreak >= 3) SoundManager.playStreak(); return newStreak; });
+                    SoundManager.playCorrect();
+                    spawnParticles(true);
+                } else {
+                    setStreak(0);
+                    SoundManager.playWrong();
+                    spawnParticles(false);
+                }
+
+                setAnswers(prev => [...prev, { questionId: questions[currentQ].id, answer: index, correct: isCorrect, time: answerTime }]);
+                setShowExplanation(true);
+            };
+
+            const handleTimeout = () => {
+                clearInterval(timerRef.current);
+                SoundManager.playTimeout();
+                setSelectedAnswer(-1);
+                setStreak(0);
+                setAnswers(prev => [...prev, { questionId: questions[currentQ].id, answer: -1, correct: false, time: 25000 }]);
+                setShowExplanation(true);
+                spawnParticles(false);
+            };
+
+            const handleNext = () => {
+                SoundManager.playClick();
+                if (currentQ < questions.length - 1) {
+                    setCurrentQ(prev => prev + 1);
+                    setSelectedAnswer(null);
+                    setShowExplanation(false);
+                    setTimeLeft(25);
+                } else {
+                    startComputing();
+                }
+            };
+
+            const startComputing = () => {
+                setScreen('computing');
+                setComputeStep(0);
+                [0, 1, 2, 3, 4].forEach((step, i) => {
+                    setTimeout(() => {
+                        setComputeStep(step + 1);
+                        SoundManager.playLoading();
+                        if (step === 4) {
+                            setTimeout(() => {
+                                const maxScore = questions.reduce((sum, q) => sum + q.points, 0) + 120 + 50;
+                                const calculatedIq = Math.round(70 + (score / maxScore) * 110);
+                                setIq(calculatedIq);
+                                setScreen('result');
+                            }, 800);
+                        }
+                    }, (i + 1) * 1000);
+                });
+            };
+
+            const handleReset = () => {
+                SoundManager.playClick();
+                const shuffled = [...allQuestions].sort(() => Math.random() - 0.5).slice(0, 12);
+                setQuestions(shuffled);
+                setCurrentQ(0);
+                setScore(0);
+                setAnswers([]);
+                setSelectedAnswer(null);
+                setShowExplanation(false);
+                setIq(0);
+                setTimeLeft(25);
+                setStreak(0);
+                setMaxStreak(0);
+                setTotalTimeBonus(0);
+                setScreen('welcome');
+                setWallet(null);
+                setResultPhase(0);
+                setDisplayedIQ(0);
+                setShowConfetti(false);
+                setFireworks([]);
+                setEarnedAchievements([]);
+                setRevealedAchievements(0);
+            };
+
+            const getResult = () => iqResults.find(r => iq >= r.min && iq <= r.max) || iqResults[0];
+            const truncateAddress = (addr) => addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : '';
+
+            // Styles
+            const styles = {
+                container: { minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', position: 'relative' },
+                card: { background: 'rgba(15, 15, 25, 0.95)', backdropFilter: 'blur(30px)', borderRadius: '24px', padding: '40px', maxWidth: '650px', width: '100%', boxShadow: '0 25px 80px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)', position: 'relative', zIndex: 1, animation: 'fadeIn 0.5s ease' },
+                button: { background: 'linear-gradient(135deg, #A855F7 0%, #7C3AED 50%, #5B21B6 100%)', border: 'none', borderRadius: '14px', padding: '18px 36px', color: '#fff', fontFamily: "'Orbitron', sans-serif", fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.3s ease', boxShadow: '0 4px 20px rgba(168, 85, 247, 0.5)', letterSpacing: '1px' },
+                optionButton: { background: 'rgba(168, 85, 247, 0.08)', border: '2px solid rgba(168, 85, 247, 0.25)', borderRadius: '14px', padding: '18px', color: '#fff', fontFamily: "'Space Mono', monospace", fontSize: '0.95rem', cursor: 'pointer', transition: 'all 0.3s ease', textAlign: 'left', width: '100%' },
+                soundToggle: { position: 'fixed', top: '20px', right: '20px', background: 'rgba(15, 15, 25, 0.95)', border: '2px solid rgba(168, 85, 247, 0.4)', borderRadius: '50%', width: '55px', height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.6rem', zIndex: 1000, transition: 'all 0.3s ease' },
+                fheBadge: { position: 'fixed', bottom: '20px', left: '20px', background: 'rgba(15, 15, 25, 0.95)', padding: '12px 20px', borderRadius: '25px', fontSize: '0.8rem', border: '1px solid rgba(78, 205, 196, 0.4)', color: '#4ECDC4', zIndex: 1000 },
+                progressBar: { width: '100%', height: '10px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '5px', overflow: 'hidden', marginBottom: '20px' },
+                progressFill: { height: '100%', background: 'linear-gradient(90deg, #A855F7, #4ECDC4, #FFE66D)', backgroundSize: '200% 100%', animation: 'shimmer 3s linear infinite', transition: 'width 0.5s ease' }
+            };
+
+            if (isLoading) return <LoadingScreen progress={Math.min(loadingProgress, 100)} />;
+
+            // Welcome Screen
+            const renderWelcome = () => (
+                <div style={styles.card}>
+                    <div style={{ fontSize: '100px', textAlign: 'center', animation: 'float 3s ease-in-out infinite', filter: 'drop-shadow(0 0 30px rgba(168, 85, 247, 0.6))' }}>🧠</div>
+                    <h1 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 'clamp(1.8rem, 5vw, 3rem)', textAlign: 'center', marginBottom: '10px', animation: 'rainbow 4s linear infinite', letterSpacing: '3px' }}>FHE IQ TEST</h1>
+                    <p style={{ fontFamily: "'Comic Neue', cursive", fontSize: '1.3rem', textAlign: 'center', color: '#4ECDC4', marginBottom: '30px' }}>Big Brain or Smooth Brain?</p>
+                    <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                        {['🔐 FHE Encrypted', '👛 Web3', '🎭 Meme-fied', '⚡ Speed Bonus'].map((tag, i) => (
+                            <span key={i} style={{ display: 'inline-block', background: 'rgba(168, 85, 247, 0.15)', padding: '8px 16px', borderRadius: '25px', fontSize: '0.8rem', margin: '4px', border: '1px solid rgba(168, 85, 247, 0.3)' }}>{tag}</span>
+                        ))}
+                    </div>
+                    <button style={{ ...styles.button, width: '100%', marginBottom: '20px' }} onClick={handleConnect}>👛 CONNECT WALLET</button>
+                    <div style={{ textAlign: 'center', color: '#888', fontSize: '0.9rem', display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>
+                        <span>📝 12 Questions</span><span>⏱️ 25s/question</span><span>🔥 Streak Bonus</span>
+                    </div>
+                </div>
+            );
+
+            // Connecting Screen
+            const renderConnecting = () => (
+                <div style={styles.card}>
+                    <div style={{ fontSize: '100px', textAlign: 'center', animation: 'bounce 1s ease-in-out infinite' }}>👛</div>
+                    <h2 style={{ textAlign: 'center', marginTop: '20px', fontFamily: "'Orbitron', sans-serif" }}>Connecting Wallet...</h2>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '30px' }}>
+                        {[0, 1, 2].map(i => (<div key={i} style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#A855F7', animation: `pulse 1s ease-in-out ${i * 0.2}s infinite` }} />))}
+                    </div>
+                </div>
+            );
+
+            // Quiz Screen
+            const renderQuiz = () => {
+                if (!questions[currentQ]) return null;
+                const q = questions[currentQ];
+                const typeEmoji = q.type === 'standard' ? '🧠 IQ' : q.type === 'trick' ? '🎭 TRICK' : '🐸 MEME';
+                const typeColor = q.type === 'standard' ? '#4ECDC4' : q.type === 'trick' ? '#FFE66D' : '#FF6B6B';
+
+                return (
+                    <div style={{ ...styles.card, padding: '28px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #A855F7, #4ECDC4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>👤</div>
+                                <span style={{ fontSize: '0.85rem', color: '#888' }}>{truncateAddress(wallet)}</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: '18px', alignItems: 'center' }}>
+                                <span style={{ color: '#FFE66D', fontWeight: 'bold' }}>⭐ {score} pts</span>
+                                <span style={{ color: timeLeft <= 10 ? '#FF6B6B' : '#4ECDC4', animation: timeLeft <= 10 ? 'shake 0.5s infinite' : 'none', fontWeight: 'bold', fontSize: '1.1rem' }}>⏱️ {timeLeft}s</span>
+                            </div>
+                        </div>
+                        {streak >= 2 && <div style={{ position: 'absolute', top: '15px', right: '15px', background: 'rgba(255, 107, 107, 0.2)', border: '2px solid #ff6b6b', borderRadius: '12px', padding: '8px 14px', animation: 'borderGlow 1.5s infinite', fontSize: '0.85rem' }}>🔥 {streak} Streak!</div>}
+                        <div style={{ marginBottom: '8px', fontSize: '0.85rem', color: '#888' }}>Question {currentQ + 1}/12</div>
+                        <div style={styles.progressBar}><div style={{ ...styles.progressFill, width: `${((currentQ + 1) / 12) * 100}%` }}></div></div>
+                        <div style={{ background: 'rgba(0, 0, 0, 0.4)', borderRadius: '18px', padding: '24px', marginBottom: '24px', position: 'relative' }}>
+                            {showTimeBonus && timeBonus > 0 && <div className="time-bonus">+{timeBonus} Speed Bonus! ⚡</div>}
+                            <div style={{ display: 'flex', gap: '10px', marginBottom: '18px', flexWrap: 'wrap' }}>
+                                <span style={{ background: typeColor + '25', color: typeColor, padding: '6px 14px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>{typeEmoji}</span>
+                                <span style={{ background: 'rgba(168, 85, 247, 0.2)', color: '#A855F7', padding: '6px 14px', borderRadius: '20px', fontSize: '0.8rem' }}>+{q.points} pts</span>
+                            </div>
+                            <h3 style={{ fontSize: '1.15rem', lineHeight: '1.7', fontFamily: "'Space Mono', monospace" }}>{q.question}</h3>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px' }}>
+                            {q.options.map((opt, i) => {
+                                let bgColor = 'rgba(168, 85, 247, 0.08)';
+                                let borderColor = 'rgba(168, 85, 247, 0.25)';
+                                let animation = '';
+                                if (selectedAnswer !== null) {
+                                    if (i === q.correct) { bgColor = 'rgba(78, 205, 196, 0.25)'; borderColor = '#4ECDC4'; animation = 'correctPulse 0.6s ease'; }
+                                    else if (i === selectedAnswer) { bgColor = 'rgba(255, 107, 107, 0.25)'; borderColor = '#FF6B6B'; animation = 'wrongShake 0.6s ease'; }
+                                }
+                                return (
+                                    <button key={i} style={{ ...styles.optionButton, background: bgColor, borderColor, animation, cursor: selectedAnswer !== null ? 'default' : 'pointer' }} onClick={() => handleAnswer(i)} disabled={selectedAnswer !== null}>
+                                        <span style={{ fontWeight: 'bold', color: '#A855F7', marginRight: '10px' }}>{String.fromCharCode(65 + i)}.</span>{opt}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        {showExplanation && (
+                            <div style={{ marginTop: '24px', animation: 'fadeIn 0.4s ease' }}>
+                                <div style={{ background: selectedAnswer === q.correct ? 'rgba(78, 205, 196, 0.12)' : 'rgba(255, 107, 107, 0.12)', border: `2px solid ${selectedAnswer === q.correct ? '#4ECDC4' : '#FF6B6B'}`, borderRadius: '14px', padding: '18px', marginBottom: '18px' }}>
+                                    <p style={{ fontWeight: 'bold', marginBottom: '10px', color: selectedAnswer === q.correct ? '#4ECDC4' : '#FF6B6B', fontSize: '1.1rem' }}>
+                                        {selectedAnswer === q.correct ? `✅ Correct! ${timeBonus > 0 ? `+${timeBonus} Speed Bonus!` : ''}` : selectedAnswer === -1 ? "⏰ Time's up!" : '❌ Wrong!'}
+                                    </p>
+                                    <p style={{ color: '#ccc', fontSize: '0.95rem' }}>💡 {q.explanation}</p>
+                                </div>
+                                <button style={{ ...styles.button, width: '100%' }} onClick={handleNext}>{currentQ < questions.length - 1 ? 'NEXT QUESTION →' : '🎉 VIEW RESULTS'}</button>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            // Computing Screen
+            const renderComputing = () => {
+                const steps = ['Encrypting answers...', 'Generating FHE ciphertext...', 'Homomorphic computation...', 'Calculating IQ score...', 'Decrypting results...'];
+                return (
+                    <div style={styles.card}>
+                        <div style={{ position: 'relative', width: '180px', height: '180px', margin: '0 auto 40px' }}>
+                            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '70px', animation: 'pulse 1s ease-in-out infinite', zIndex: 2 }}>🔐</div>
+                            {[0, 1, 2, 3].map(i => (<div key={i} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '120px', height: '120px', border: '3px solid', borderColor: ['#A855F7', '#4ECDC4', '#FFE66D', '#FF6B6B'][i], borderRadius: '50%', animation: `ring 2.5s ease-out ${i * 0.4}s infinite` }}></div>))}
+                        </div>
+                        <h2 style={{ textAlign: 'center', marginBottom: '35px', fontFamily: "'Orbitron', sans-serif", fontSize: '1.3rem', letterSpacing: '3px' }}>FHE PROCESSING</h2>
+                        <div style={{ marginBottom: '25px' }}>
+                            {steps.map((step, i) => (
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '12px', opacity: computeStep > i ? 1 : 0.3, transition: 'all 0.4s ease' }}>
+                                    <span style={{ color: computeStep > i ? '#4ECDC4' : '#444', fontSize: '1.4rem' }}>{computeStep > i ? '✓' : '○'}</span>
+                                    <span style={{ color: computeStep > i ? '#fff' : '#555' }}>{step}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={styles.progressBar}><div style={{ ...styles.progressFill, width: `${(computeStep / 5) * 100}%` }}></div></div>
+                    </div>
+                );
+            };
+
+            // EPIC Result Screen
+            const renderResult = () => {
+                const result = getResult();
+                const stats = calculateStats();
+                const percentile = Math.min(99, Math.round(50 + (iq - 100) * 1.5));
+
+                return (
+                    <div style={{ ...styles.card, textAlign: 'center', maxWidth: '700px', overflow: 'visible' }}>
+                        {showConfetti && <Confetti count={150} />}
+                        {fireworks.map(fw => <Firework key={fw.id} x={fw.x} y={fw.y} color={fw.color} />)}
+
+                        {/* Phase 1: Character Reveal */}
+                        {resultPhase >= 1 && (
+                            <div style={{ animation: 'spotlight 0.8s ease-out', marginBottom: '20px' }}>
+                                <div style={{
+                                    fontSize: '140px',
+                                    animation: resultPhase >= 2 ? 'megaPulse 1s ease-in-out infinite' : 'none',
+                                    filter: `drop-shadow(0 0 60px ${result.color})`,
+                                    transition: 'all 0.5s ease'
+                                }}>
+                                    {result.emoji}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Phase 2: IQ Counter */}
+                        {resultPhase >= 2 && (
+                            <div style={{ animation: 'fadeIn 0.5s ease' }}>
+                                <h1 style={{
+                                    fontFamily: "'Orbitron', sans-serif",
+                                    fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
+                                    color: result.color,
+                                    textShadow: `0 0 50px ${result.color}`,
+                                    marginBottom: '5px',
+                                    letterSpacing: '4px',
+                                    animation: 'neonFlicker 2s infinite'
+                                }}>
+                                    {result.title}
+                                </h1>
+                                <p style={{ fontFamily: "'Comic Neue', cursive", fontSize: '1.2rem', color: '#888', marginBottom: '20px' }}>
+                                    {result.subtitle}
+                                </p>
+
+                                {/* Big IQ Number */}
+                                <div style={{
+                                    position: 'relative',
+                                    display: 'inline-block',
+                                    marginBottom: '15px'
+                                }}>
+                                    <div style={{
+                                        fontSize: '6rem',
+                                        fontWeight: 'bold',
+                                        fontFamily: "'Orbitron', sans-serif",
+                                        color: result.color,
+                                        textShadow: `0 0 60px ${result.color}, 0 0 120px ${result.color}50`,
+                                        animation: displayedIQ === iq ? 'countUp 0.3s ease' : 'none'
+                                    }}>
+                                        {displayedIQ}
+                                    </div>
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '-10px',
+                                        right: '-40px',
+                                        fontSize: '1.5rem',
+                                        color: '#FFE66D',
+                                        animation: 'float 2s ease-in-out infinite'
+                                    }}>
+                                        ✨
+                                    </div>
+                                </div>
+                                <p style={{ color: '#888', fontSize: '1.2rem', marginBottom: '5px' }}>IQ Score</p>
+                                <p style={{ color: result.color, fontSize: '0.9rem', marginBottom: '20px' }}>
+                                    Better than {percentile}% of test takers!
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Phase 3: Stats Cards */}
+                        {resultPhase >= 3 && (
+                            <div style={{ marginBottom: '25px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '12px' }}>
+                                    {[
+                                        { value: score, label: 'Total Points', color: '#A855F7', icon: '⭐', delay: 0 },
+                                        { value: `${stats.correctCount}/${questions.length}`, label: 'Correct', color: '#4ECDC4', icon: '✓', delay: 0.1 },
+                                        { value: `${stats.accuracy}%`, label: 'Accuracy', color: '#FFE66D', icon: '🎯', delay: 0.2 }
+                                    ].map((stat, i) => (
+                                        <div key={i} style={{
+                                            background: `${stat.color}15`,
+                                            padding: '18px 12px',
+                                            borderRadius: '14px',
+                                            border: `1px solid ${stat.color}40`,
+                                            animation: `cardFlip 0.5s ease ${stat.delay}s both`
+                                        }}>
+                                            <div style={{ fontSize: '0.8rem', marginBottom: '5px' }}>{stat.icon}</div>
+                                            <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: stat.color }}>{stat.value}</div>
+                                            <div style={{ fontSize: '0.7rem', color: '#888', marginTop: '4px' }}>{stat.label}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                                    {[
+                                        { value: `🔥 ${maxStreak}`, label: 'Best Streak', color: '#FF6B6B', delay: 0.3 },
+                                        { value: `⚡ +${totalTimeBonus}`, label: 'Speed Bonus', color: '#4ECDC4', delay: 0.4 },
+                                        { value: `⏱️ ${Math.round(stats.avgTime / 1000)}s`, label: 'Avg Time', color: '#A855F7', delay: 0.5 }
+                                    ].map((stat, i) => (
+                                        <div key={i} style={{
+                                            background: `${stat.color}12`,
+                                            padding: '14px 12px',
+                                            borderRadius: '14px',
+                                            border: `1px solid ${stat.color}30`,
+                                            animation: `cardFlip 0.5s ease ${stat.delay}s both`
+                                        }}>
+                                            <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: stat.color }}>{stat.value}</div>
+                                            <div style={{ fontSize: '0.65rem', color: '#888', marginTop: '4px' }}>{stat.label}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Phase 4: Achievements */}
+                        {resultPhase >= 4 && earnedAchievements.length > 0 && (
+                            <div style={{ marginBottom: '25px', animation: 'fadeIn 0.5s ease' }}>
+                                <h3 style={{ fontSize: '1rem', color: '#FFE66D', marginBottom: '15px', fontFamily: "'Orbitron', sans-serif" }}>
+                                    🏆 ACHIEVEMENTS UNLOCKED
+                                </h3>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center' }}>
+                                    {earnedAchievements.slice(0, revealedAchievements).map((achievement, i) => (
+                                        <div key={achievement.id} style={{
+                                            background: 'linear-gradient(135deg, rgba(255, 230, 109, 0.2), rgba(255, 165, 0, 0.1))',
+                                            border: '2px solid #FFE66D',
+                                            borderRadius: '12px',
+                                            padding: '12px 16px',
+                                            animation: 'badgeReveal 0.5s ease',
+                                            boxShadow: '0 0 20px rgba(255, 230, 109, 0.3)'
+                                        }}>
+                                            <div style={{ fontSize: '1.8rem', marginBottom: '5px' }}>{achievement.emoji}</div>
+                                            <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#FFE66D' }}>{achievement.name}</div>
+                                            <div style={{ fontSize: '0.6rem', color: '#888' }}>{achievement.desc}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Phase 5: Fun Fact & Roast */}
+                        {resultPhase >= 5 && (
+                            <div style={{
+                                background: `linear-gradient(135deg, ${result.color}15, ${result.color}05)`,
+                                borderRadius: '16px',
+                                padding: '20px',
+                                marginBottom: '25px',
+                                border: `1px solid ${result.color}30`,
+                                animation: 'slideUp 0.5s ease'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '15px' }}>
+                                    <span style={{ fontSize: '3rem' }}>{result.character}</span>
+                                    <div style={{ textAlign: 'left' }}>
+                                        <p style={{ color: result.color, fontWeight: 'bold', fontSize: '0.9rem' }}>{result.description}</p>
+                                    </div>
+                                </div>
+                                <div style={{ borderTop: `1px solid ${result.color}30`, paddingTop: '15px' }}>
+                                    <p style={{ color: '#888', fontSize: '0.85rem', fontStyle: 'italic', marginBottom: '10px' }}>
+                                        💡 {result.funFact}
+                                    </p>
+                                    <p style={{ color: '#ff6b6b', fontSize: '0.8rem' }}>
+                                        🔥 {result.roast}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Phase 6: Action Buttons */}
+                        {resultPhase >= 6 && (
+                            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', animation: 'slideUp 0.5s ease' }}>
+                                <button
+                                    style={{ ...styles.button, background: 'linear-gradient(135deg, #FFE66D 0%, #feca57 100%)', color: '#000' }}
+                                    onClick={() => alert('🚧 NFT Minting coming soon!')}
+                                >
+                                    🎨 Mint NFT
+                                </button>
+                                <button
+                                    style={{ ...styles.button, background: 'linear-gradient(135deg, #1DA1F2 0%, #0d8bd9 100%)' }}
+                                    onClick={() => {
+                                        const badges = earnedAchievements.slice(0, 3).map(a => a.emoji).join('');
+                                        const text = `🧠 FHE IQ Test Result:\n\n${result.emoji} ${result.title}\nIQ: ${iq} | ${stats.accuracy}% Accuracy\n${badges ? `Badges: ${badges}\n` : ''}${result.subtitle}\n\n#FHE #Web3 #IQTest`;
+                                        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+                                    }}
+                                >
+                                    🐦 Share
+                                </button>
+                                <button
+                                    style={{ ...styles.button, background: 'linear-gradient(135deg, #4ECDC4 0%, #26a69a 100%)' }}
+                                    onClick={handleReset}
+                                >
+                                    🔄 Try Again
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            return (
+                <div className="app-container" style={styles.container}>
+                    <div className="grid-overlay"></div>
+                    <div className="scanline"></div>
+                    <FloatingParticles />
+                    <button style={styles.soundToggle} onClick={() => { setSoundEnabled(!soundEnabled); SoundManager.playClick(); }}>{soundEnabled ? '🔊' : '🔇'}</button>
+                    <div style={styles.fheBadge}>🔐 FHE Encrypted • Zama fhEVM</div>
+                    {particles.map(p => <Particle key={p.id} emoji={p.emoji} x={p.x} delay={p.delay} type={p.type} />)}
+                    {screen === 'welcome' && renderWelcome()}
+                    {screen === 'connecting' && renderConnecting()}
+                    {screen === 'quiz' && renderQuiz()}
+                    {screen === 'computing' && renderComputing()}
+                    {screen === 'result' && renderResult()}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<FHEIQTestApp />);
+    </script>
+</body>
+</html>
